@@ -86,10 +86,10 @@ export default class GameClient {
                     this.dispatched_callback(reply.host, reply.port);
                 } else if (reply.status === "FULL") {
                     alert(
-                        "LeetQuest is currently at maximum player population. Please retry later.",
+                        "DragsLittleTavern is currently at maximum player population. Please retry later.",
                     );
                 } else {
-                    alert("Unknown error while connecting to LeetQuest.");
+                    alert("Unknown error while connecting to DragsLittleTavern.");
                 }
             };
         } else {
@@ -127,7 +127,7 @@ export default class GameClient {
                         );
                     } else {
                         this.disconnected_callback(
-                            "The connection to LeetQuest has been lost",
+                            "The connection to DragsLittleTavern has been lost",
                         );
                     }
                 }
