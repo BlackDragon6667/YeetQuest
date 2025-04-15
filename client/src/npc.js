@@ -27,10 +27,10 @@ const NpcTalk = {
     villagegirl: [
         "Hi there, adventurer!",
         "How do you like this game?",
-        "It's all happening in a single web page! Isn't it crazy?",
-        "It's all made possible thanks to WebSockets.",
+        "Isn't it crazy?",
+        "Do you still remeber about dragstavern",
         "I don't know much about it, after all I'm just a program.",
-        'Why don&#x27;t you read this <a target="_blank" href="https://hacks.mozilla.org/2012/03/browserquest/">blog post</a> and learn all about it?',
+        'Why don&#x27;t you read this nothing to read ?',
     ],
 
     villager: [
@@ -141,8 +141,8 @@ const NpcTalk = {
     ],
 
     coder: [
-        "Hi! Do you know that you can also play DragsLittleTavern on your tablet or mobile?",
-        "That's the beauty of HTML5!",
+        "Hi! Do you know that you can also play DragsLittleTavern?",
+        "i dont know either",
         "Give it a try...",
     ],
 
