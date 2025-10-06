@@ -12,16 +12,12 @@ export default class Camera {
     }
 
     rescale() {
-
-    // Make the camera render a larger area to match the new canvas size
-    // For 1280x720 at tilesize 16 and scale 2, gridW = 1280/(16*2) = 40, gridH = 720/(16*2) = 22.5
-    // We'll round to 40x22 for a good fit
-    this.gridW = 40;
-    this.gridH = 22;
+        // Calculate grid size based on 1280x720 viewport with tilesize 16 and scale 2
+        this.gridW = 40; // 1280/(16*2)
+        this.gridH = 22; // 720/(16*2)
 
         log.debug("---------");
-        log.debug("Factor:" + factor);
-        log.debug("W:" + this.gridW + " H:" + this.gridH);
+        log.debug("Camera grid size - W:" + this.gridW + " H:" + this.gridH);
     }
 
     setPosition(x, y) {
