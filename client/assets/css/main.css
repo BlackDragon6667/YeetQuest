@@ -209,26 +209,25 @@ canvas {
 footer,
 
 #container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    max-width: 100vw;
-    max-height: 100vh;
-    overflow: hidden;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -o-user-select: none;
-    -ms-user-select: none;
+    width: 1470px;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    margin-top: -378px;
+    left: 50%;
+    margin-left: -735px;
+}
+
+#canvasborder {
+    padding: 15px;
+    background: url("../img/1/border.png") no-repeat;
+    background-size: 100%;
 }
 
 #canvas {
-    position: absolute;
-    left: 0;
-    top: 0;
     width: 100%;
-    height: 100%;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
+    height: 672px;
+    position: relative;
 }
 
 @media (max-width: 1280px) {

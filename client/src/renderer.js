@@ -33,6 +33,10 @@ export default class Renderer {
         this.initFPS();
         this.tilesize = 16;
 
+        // Constants
+        this.CURSOR_SIZE = 14;
+        this.PLAYER_NAME_OFFSET = 8;
+
         if (this.context.imageSmoothingEnabled === undefined)
             log.error(
                 "imageSmoothingEnabled not supported; " +
@@ -142,6 +146,21 @@ export default class Renderer {
                 " x " +
                 this.forecanvas.height,
         );
+
+        // Set canvases to fill their container visually (CSS) while keeping
+        // the internal pixel resolution in the width/height attributes.
+        if (this.canvas.style) {
+            this.canvas.style.width = "100%";
+            this.canvas.style.height = "100%";
+        }
+        if (this.backcanvas.style) {
+            this.backcanvas.style.width = "100%";
+            this.backcanvas.style.height = "100%";
+        }
+        if (this.forecanvas.style) {
+            this.forecanvas.style.width = "100%";
+            this.forecanvas.style.height = "100%";
+        }
     }
 
     initFPS() {
@@ -241,12 +260,13 @@ export default class Renderer {
     drawAttackTargetCell() {
         var mouse = this.game.getMouseGridPosition(),
             entity = this.game.getEntityAt(mouse.x, mouse.y),
-            s = this.scale;
+            s = this.scale,
+            ts = this.tilesize;
 
         if (entity) {
             this.drawCellRect(
-                entity.x * s,
-                entity.y * s,
+                entity.x * ts * s,
+                entity.y * ts * s,
                 "rgba(255, 0, 0, 0.5)",
             );
         }
@@ -311,7 +331,7 @@ export default class Renderer {
                         y = frame.y * os,
                         w = sprite.width * os,
                         h = sprite.height * os,
-                        ts = 16,
+                        ts = this.tilesize,
                         dx = this.game.selectedX * ts * s,
                         dy = this.game.selectedY * ts * s,
                         dw = w * ds,
@@ -354,12 +374,12 @@ export default class Renderer {
                 this.game.currentCursor.image,
                 0,
                 0,
-                14 * os,
-                14 * os,
+                this.CURSOR_SIZE * os,
+                this.CURSOR_SIZE * os,
                 mx,
                 my,
-                14 * s,
-                14 * s,
+                this.CURSOR_SIZE * s,
+                this.CURSOR_SIZE * s,
             );
         }
         this.context.restore();
@@ -367,12 +387,18 @@ export default class Renderer {
 
     drawScaledImage(ctx, image, x, y, w, h, dx, dy) {
         var s = this.upscaledRendering ? 1 : this.scale;
-        [ctx, image, x, y, w, h, dx, dy].forEach((arg) => {
+        
+        // Validate all parameters
+        if (!ctx || !image) {
+            throw Error("Context and image are required for drawScaledImage");
+        }
+        
+        [x, y, w, h, dx, dy].forEach((arg, index) => {
+            const names = ['x', 'y', 'w', 'h', 'dx', 'dy'];
             if (isUndefined(arg) || isNull(arg) || isNaN(arg) || arg < 0) {
                 throw Error(
-                    "A problem occured when trying to draw on the canvas: " +
-                        "One of these parameters is not nonnegative number: " +
-                        `x:${x} y:${y} w:${w} h:${h} dx:${dx} dy:${dy}`,
+                    "A problem occurred when trying to draw on the canvas: " +
+                        `Parameter ${names[index]} is invalid: ${arg}`,
                 );
             }
         });
@@ -419,76 +445,90 @@ export default class Renderer {
     }
 
     drawEntity(entity) {
+        // Validate entity has required properties
+        if (!entity || !entity.sprite) {
+            return;
+        }
+
         const sprite = entity.sprite,
             shadow = this.game.shadows["small"],
             anim = entity.currentAnimation,
             os = this.upscaledRendering ? 1 : this.scale,
             ds = this.upscaledRendering ? this.scale : 1;
 
-        if (anim && sprite) {
-            const frame = anim.currentFrame,
-                s = this.scale,
-                x = frame.x * os,
-                y = frame.y * os,
-                w = sprite.width * os,
-                h = sprite.height * os,
-                ox = sprite.offsetX * s,
-                oy = sprite.offsetY * s,
-                dx = entity.x * s,
-                dy = entity.y * s,
-                dw = w * ds,
-                dh = h * ds;
+        if (!anim) {
+            return;
+        }
 
-            if (entity.isFading) {
-                this.context.save();
-                this.context.globalAlpha = entity.fadingAlpha;
-            }
+        const frame = anim.currentFrame;
+        if (!frame) {
+            return;
+        }
 
-            if (!this.mobile && !this.tablet) {
-                this.drawEntityName(entity);
-            }
+        const s = this.scale,
+            ts = this.tilesize,
+            x = frame.x * os,
+            y = frame.y * os,
+            w = sprite.width * os,
+            h = sprite.height * os,
+            ox = sprite.offsetX * s,
+            oy = sprite.offsetY * s,
+            dx = entity.x * ts * s,  // Fixed: added tilesize multiplication
+            dy = entity.y * ts * s,  // Fixed: added tilesize multiplication
+            dw = w * ds,
+            dh = h * ds;
 
+        if (entity.isFading) {
             this.context.save();
-            if (entity.flipSpriteX) {
-                this.context.translate(dx + this.tilesize * s, dy);
-                this.context.scale(-1, 1);
-            } else if (entity.flipSpriteY) {
-                this.context.translate(dx, dy + dh);
-                this.context.scale(1, -1);
-            } else {
-                this.context.translate(dx, dy);
+            this.context.globalAlpha = entity.fadingAlpha;
+        }
+
+        if (!this.mobile && !this.tablet) {
+            this.drawEntityName(entity);
+        }
+
+        this.context.save();
+        if (entity.flipSpriteX) {
+            this.context.translate(dx + ts * s, dy);
+            this.context.scale(-1, 1);
+        } else if (entity.flipSpriteY) {
+            this.context.translate(dx, dy + dh);
+            this.context.scale(1, -1);
+        } else {
+            this.context.translate(dx, dy);
+        }
+
+        if (entity.isVisible()) {
+            if (entity.hasShadow() && shadow) {
+                this.context.drawImage(
+                    shadow.image,
+                    0,
+                    0,
+                    shadow.width * os,
+                    shadow.height * os,
+                    0,
+                    entity.shadowOffsetY * ds,
+                    shadow.width * os * ds,
+                    shadow.height * os * ds,
+                );
             }
 
-            if (entity.isVisible()) {
-                if (entity.hasShadow()) {
-                    this.context.drawImage(
-                        shadow.image,
-                        0,
-                        0,
-                        shadow.width * os,
-                        shadow.height * os,
-                        0,
-                        entity.shadowOffsetY * ds,
-                        shadow.width * os * ds,
-                        shadow.height * os * ds,
-                    );
-                }
+            this.context.drawImage(
+                sprite.image,
+                x,
+                y,
+                w,
+                h,
+                ox,
+                oy,
+                dw,
+                dh,
+            );
 
-                this.context.drawImage(
-                    sprite.image,
-                    x,
-                    y,
-                    w,
-                    h,
-                    ox,
-                    oy,
-                    dw,
-                    dh,
-                );
-
-                if (entity instanceof Item && entity.kind !== Entities.CAKE) {
-                    const sparks = this.game.sprites["sparks"],
-                        anim = this.game.sparksAnimation,
+            if (entity instanceof Item && entity.kind !== Entities.CAKE) {
+                const sparks = this.game.sprites["sparks"];
+                if (sparks) {
+                    const anim = this.game.sparksAnimation,
                         frame = anim.currentFrame,
                         sx = sparks.width * frame.index * os,
                         sy = sparks.height * anim.row * os,
@@ -508,44 +548,44 @@ export default class Renderer {
                     );
                 }
             }
+        }
 
-            if (
-                entity instanceof Character &&
-                !entity.isDead &&
-                entity.hasWeapon()
-            ) {
-                var weapon = this.game.sprites[entity.getWeaponName()];
+        if (
+            entity instanceof Character &&
+            !entity.isDead &&
+            entity.hasWeapon()
+        ) {
+            var weapon = this.game.sprites[entity.getWeaponName()];
 
-                if (weapon) {
-                    var weaponAnimData = weapon.animationData[anim.name],
-                        index =
-                            frame.index < weaponAnimData.length
-                                ? frame.index
-                                : frame.index % weaponAnimData.length,
-                        wx = weapon.width * index * os,
-                        wy = weapon.height * anim.row * os,
-                        ww = weapon.width * os,
-                        wh = weapon.height * os;
+            if (weapon && weapon.animationData && weapon.animationData[anim.name]) {
+                var weaponAnimData = weapon.animationData[anim.name],
+                    index =
+                        frame.index < weaponAnimData.length
+                            ? frame.index
+                            : frame.index % weaponAnimData.length,
+                    wx = weapon.width * index * os,
+                    wy = weapon.height * anim.row * os,
+                    ww = weapon.width * os,
+                    wh = weapon.height * os;
 
-                    this.context.drawImage(
-                        weapon.image,
-                        wx,
-                        wy,
-                        ww,
-                        wh,
-                        weapon.offsetX * s,
-                        weapon.offsetY * s,
-                        ww * ds,
-                        wh * ds,
-                    );
-                }
+                this.context.drawImage(
+                    weapon.image,
+                    wx,
+                    wy,
+                    ww,
+                    wh,
+                    weapon.offsetX * s,
+                    weapon.offsetY * s,
+                    ww * ds,
+                    wh * ds,
+                );
             }
+        }
 
+        this.context.restore();
+
+        if (entity.isFading) {
             this.context.restore();
-
-            if (entity.isFading) {
-                this.context.restore();
-            }
         }
     }
 
@@ -572,7 +612,9 @@ export default class Renderer {
     }
 
     clearDirtyRect(r) {
-        this.context.clearRect(r.x, r.y, r.w, r.h);
+        if (r) {
+            this.context.clearRect(r.x, r.y, r.w, r.h);
+        }
     }
 
     clearDirtyRects() {
@@ -609,6 +651,7 @@ export default class Renderer {
     getEntityBoundingRect(entity) {
         var rect = {},
             s = this.scale,
+            ts = this.tilesize,
             spr;
 
         if (entity instanceof Player && entity.hasWeapon()) {
@@ -619,8 +662,8 @@ export default class Renderer {
         }
 
         if (spr) {
-            rect.x = (entity.x + spr.offsetX - this.camera.x) * s;
-            rect.y = (entity.y + spr.offsetY - this.camera.y) * s;
+            rect.x = (entity.x * ts + spr.offsetX - this.camera.x * ts) * s;
+            rect.y = (entity.y * ts + spr.offsetY - this.camera.y * ts) * s;
             rect.w = spr.width * s;
             rect.h = spr.height * s;
             rect.left = rect.x;
@@ -638,8 +681,8 @@ export default class Renderer {
             ts = this.tilesize,
             cellid = tile.index;
 
-        rect.x = ((cellid % gridW) * ts - this.camera.x) * s;
-        rect.y = (Math.floor(cellid / gridW) * ts - this.camera.y) * s;
+        rect.x = ((cellid % gridW) * ts - this.camera.x * ts) * s;
+        rect.y = (Math.floor(cellid / gridW) * ts - this.camera.y * ts) * s;
         rect.w = ts * s;
         rect.h = ts * s;
         rect.left = rect.x;
@@ -654,11 +697,11 @@ export default class Renderer {
         var rect = {},
             s = this.scale,
             ts = this.tilesize,
-            tx = x || this.game.selectedX,
-            ty = y || this.game.selectedY;
+            tx = x !== undefined ? x : this.game.selectedX,
+            ty = y !== undefined ? y : this.game.selectedY;
 
-        rect.x = (tx * ts - this.camera.x) * s;
-        rect.y = (ty * ts - this.camera.y) * s;
+        rect.x = (tx * ts - this.camera.x * ts) * s;
+        rect.y = (ty * ts - this.camera.y * ts) * s;
         rect.w = ts * s;
         rect.h = ts * s;
         rect.left = rect.x;
@@ -684,8 +727,8 @@ export default class Renderer {
             var color = entity.id === this.game.playerId ? "#fcda5c" : "white";
             this.drawText(
                 entity.name,
-                (entity.x + 8) * this.scale,
-                (entity.y + entity.nameOffsetY) * this.scale,
+                (entity.x * this.tilesize + this.PLAYER_NAME_OFFSET) * this.scale,
+                (entity.y * this.tilesize + entity.nameOffsetY) * this.scale,
                 true,
                 color,
             );
@@ -784,7 +827,6 @@ export default class Renderer {
         }
         this.frameCount++;
 
-        //this.drawText("FPS: " + this.realFPS + " / " + this.maxFPS, 30, 30, false);
         this.drawText("FPS: " + this.realFPS, 30, 30, false);
     }
 
@@ -810,7 +852,7 @@ export default class Renderer {
             this.context.globalAlpha = info.opacity;
             this.drawText(
                 info.value,
-                (info.x + 8) * this.scale,
+                (info.x * this.tilesize + this.PLAYER_NAME_OFFSET) * this.scale,
                 Math.floor(info.y * this.scale),
                 true,
                 info.fillColor,
@@ -822,7 +864,7 @@ export default class Renderer {
     }
 
     setCameraView(ctx) {
-        ctx.translate(-this.camera.x * this.scale, -this.camera.y * this.scale);
+        ctx.translate(-this.camera.x * this.tilesize * this.scale, -this.camera.y * this.tilesize * this.scale);
     }
 
     clearScreen(ctx) {
