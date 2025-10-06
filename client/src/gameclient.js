@@ -89,7 +89,9 @@ export default class GameClient {
                         "DragsLittleTavern is currently at maximum player population. Please retry later.",
                     );
                 } else {
-                    alert("Unknown error while connecting to DragsLittleTavern.");
+                    alert(
+                        "Unknown error while connecting to DragsLittleTavern.",
+                    );
                 }
             };
         } else {

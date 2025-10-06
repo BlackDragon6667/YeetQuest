@@ -30,7 +30,7 @@ const NpcTalk = {
         "Isn't it crazy?",
         "Do you still remeber about dragstavern",
         "I don't know much about it, after all I'm just a program.",
-        'Why don&#x27;t you read this nothing to read ?',
+        "Why don&#x27;t you read this nothing to read ?",
     ],
 
     villager: [

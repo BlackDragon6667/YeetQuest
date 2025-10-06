@@ -15,21 +15,21 @@ export default class InputHandler {
             RIGHT: 39,
             ENTER: 13,
             SPACE: 32,
-            ESC: 27
+            ESC: 27,
         };
-        
+
         this.pressedKeys = new Set();
         this.moveDirections = new Set();
         this.initKeyboardControls();
     }
 
     initKeyboardControls() {
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener("keydown", (e) => {
             const key = e.keyCode;
             this.pressedKeys.add(key);
 
             // Handle WASD and arrow keys
-            switch(key) {
+            switch (key) {
                 case this.keys.W:
                 case this.keys.UP:
                     this.moveDirections.add(Orientations.UP);
@@ -51,12 +51,12 @@ export default class InputHandler {
             this.updatePlayerMovement();
         });
 
-        document.addEventListener('keyup', (e) => {
+        document.addEventListener("keyup", (e) => {
             const key = e.keyCode;
             this.pressedKeys.delete(key);
 
             // Handle WASD and arrow keys release
-            switch(key) {
+            switch (key) {
                 case this.keys.W:
                 case this.keys.UP:
                     this.moveDirections.delete(Orientations.UP);
@@ -85,12 +85,12 @@ export default class InputHandler {
 
         // Get the primary movement direction
         const direction = Array.from(this.moveDirections)[0];
-        
+
         // Calculate new position based on direction
         let newX = player.gridX;
         let newY = player.gridY;
-        
-        switch(direction) {
+
+        switch (direction) {
             case Orientations.UP:
                 newY -= 1;
                 break;
