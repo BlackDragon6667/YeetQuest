@@ -18,6 +18,49 @@ function initApp() {
     if (!Detect.supportsWebSocket()) {
         parchment.className = "error";
     }
+    // --- Fullscreen Toggle Logic ---
+    function toggleFullscreen() {
+        const elem = document.getElementById('container');
+        if (!document.fullscreenElement) {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const fsBtn = document.getElementById('fullscreen-toggle');
+        if (fsBtn) {
+            fsBtn.addEventListener('click', toggleFullscreen);
+        }
+        // Optional: Change button text/icon on fullscreen change
+        document.addEventListener('fullscreenchange', function() {
+            if (fsBtn) {
+                if (document.fullscreenElement) {
+                    fsBtn.textContent = '⛶ Exit Fullscreen';
+                } else {
+                    fsBtn.textContent = '⛶ Fullscreen';
+                }
+            }
+        });
+    });
+    // --- End Fullscreen Toggle Logic ---
 
     if (ctx.imageSmoothingEnabled === undefined) {
         document.querySelector("body").className += " upscaled";

@@ -246,6 +246,7 @@ Mozilla using a lot of 2011/2012 JavaScript libraries.
             </section>
         </div>
         <div id="container">
+            <button id="fullscreen-toggle" title="Toggle Fullscreen" style="position:absolute;top:10px;right:10px;z-index:2000;padding:8px 16px;font-size:1rem;border-radius:6px;border:none;background:#222;color:#fff;cursor:pointer;opacity:0.85;">⛶ Fullscreen</button>
             <div id="canvasborder">
                 <article id="instructions" class="clickable">
                     <div class="close"></div>
@@ -285,11 +286,13 @@ Mozilla using a lot of 2011/2012 JavaScript libraries.
                         <div id="next"></div>
                     </nav>
                 </article>
-                <div id="canvas">
+                                <div id="game-canvas-wrapper" style="position:relative;width:100%;height:100%;">
+                                    <div id="canvas">
                     <canvas id="background"></canvas>
                     <canvas id="entities"></canvas>
                     <canvas id="foreground" class="clickable"></canvas>
-                </div>
+                                    </div>
+                                </div>
                 <div id="bubbles"></div>
                 <div id="achievement-notification">
                     <div class="coin">
