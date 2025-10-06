@@ -105,10 +105,11 @@ export default class InputHandler {
                 break;
         }
 
-        // Check if the new position is walkable
-        if (this.game.map.isWalkable(newX, newY)) {
+        // Use existing map API: check bounds and collisions
+        if (!this.game.map.isOutOfBounds(newX, newY) && !this.game.map.isColliding(newX, newY) && !this.game.isMobAt(newX, newY)) {
             player.orientation = direction;
-            this.game.makePlayerMoveTo(newX, newY);
+            // Use existing Game API to move player
+            this.game.makePlayerGoTo(newX, newY);
         }
     }
 
