@@ -70,9 +70,23 @@ export default class Renderer {
     }
 
     getScaleFactor() {
-        // Force scale=2 for desktop for a consistent large window
-        this.mobile = false;
-        return 2;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        
+        // Calculate the best scale factor based on screen size
+        let scale = 2; // Default scale
+        
+        // For very large screens, increase scale
+        if (w >= 2560 && h >= 1440) {
+            scale = 3;
+        }
+        // For small screens, decrease scale
+        else if (w <= 1024 || h <= 768) {
+            scale = 1;
+        }
+        
+        this.mobile = w <= 1024;
+        return scale;
     }
 
     rescale() {

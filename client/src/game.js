@@ -34,6 +34,7 @@ import Updater from "./updater.js";
 import { requestAnimFrame } from "./util.js";
 import Warrior from "./warrior.js";
 import WorldMap from "./worldmap.js";
+import InputHandler from "./input.js";
 
 export default class Game {
     constructor(app) {
@@ -41,6 +42,8 @@ export default class Game {
         this.ready = false;
         this.started = false;
         this.hasNeverStarted = true;
+        this.lastTime = Date.now();
+        this.frameCount = 0;
 
         this.renderer = null;
         this.updater = null;
@@ -167,6 +170,27 @@ export default class Game {
         this.setBubbleManager(new BubbleManager($bubbleContainer));
         this.setRenderer(new Renderer(this, canvas, background, foreground));
         this.setChatInput(input);
+        this.inputHandler = new InputHandler(this);
+        
+        // Enable smooth animation
+        this.initGameLoop();
+    }
+
+    initGameLoop() {
+        const loop = () => {
+            const currentTime = Date.now();
+            const elapsed = currentTime - this.lastTime;
+            
+            // Cap at 60 FPS
+            if (elapsed > 16.6) {
+                this.tick();
+                this.frameCount++;
+                this.lastTime = currentTime;
+            }
+            
+            requestAnimFrame(loop);
+        };
+        loop();
     }
 
     setStorage(storage) {
