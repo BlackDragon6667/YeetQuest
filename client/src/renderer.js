@@ -16,7 +16,9 @@ export default class Renderer {
     constructor(game, canvas, background, foreground) {
         this.game = game;
         this.context =
-            canvas && canvas.getContext ? canvas.getContext("2d", { willReadFrequently: true }) : null;
+            canvas && canvas.getContext
+                ? canvas.getContext("2d", { willReadFrequently: true })
+                : null;
         this.background =
             background && background.getContext
                 ? background.getContext("2d", { willReadFrequently: true })

@@ -20,15 +20,18 @@ function initApp() {
     }
     // --- Fullscreen Toggle Logic ---
     function toggleFullscreen() {
-        const elem = document.getElementById('container');
+        const elem = document.getElementById("container");
         if (!document.fullscreenElement) {
             if (elem.requestFullscreen) {
                 elem.requestFullscreen();
-            } else if (elem.mozRequestFullScreen) { /* Firefox */
+            } else if (elem.mozRequestFullScreen) {
+                /* Firefox */
                 elem.mozRequestFullScreen();
-            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            } else if (elem.webkitRequestFullscreen) {
+                /* Chrome, Safari & Opera */
                 elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+            } else if (elem.msRequestFullscreen) {
+                /* IE/Edge */
                 elem.msRequestFullscreen();
             }
         } else {
@@ -44,18 +47,18 @@ function initApp() {
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const fsBtn = document.getElementById('fullscreen-toggle');
+    document.addEventListener("DOMContentLoaded", function () {
+        const fsBtn = document.getElementById("fullscreen-toggle");
         if (fsBtn) {
-            fsBtn.addEventListener('click', toggleFullscreen);
+            fsBtn.addEventListener("click", toggleFullscreen);
         }
         // Optional: Change button text/icon on fullscreen change
-        document.addEventListener('fullscreenchange', function() {
+        document.addEventListener("fullscreenchange", function () {
             if (fsBtn) {
                 if (document.fullscreenElement) {
-                    fsBtn.textContent = '⛶ Exit Fullscreen';
+                    fsBtn.textContent = "⛶ Exit Fullscreen";
                 } else {
-                    fsBtn.textContent = '⛶ Fullscreen';
+                    fsBtn.textContent = "⛶ Fullscreen";
                 }
             }
         });
