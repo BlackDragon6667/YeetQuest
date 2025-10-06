@@ -12,12 +12,14 @@ export default class Camera {
     }
 
     rescale() {
-        // Calculate grid size based on 1280x720 viewport with tilesize 16 and scale 2
-        this.gridW = 40; // 1280/(16*2)
-        this.gridH = 22; // 720/(16*2)
+        var factor = this.renderer.mobile ? 1 : 2;
+
+        this.gridW = 15 * factor;
+        this.gridH = 7 * factor;
 
         log.debug("---------");
-        log.debug("Camera grid size - W:" + this.gridW + " H:" + this.gridH);
+        log.debug("Factor: " + factor);
+        log.debug("Grid - W:" + this.gridW + " H:" + this.gridH);
     }
 
     setPosition(x, y) {

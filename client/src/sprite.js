@@ -56,7 +56,7 @@ export default class Sprite {
 
     createHurtSprite() {
         var canvas = document.createElement("canvas"),
-            ctx = canvas.getContext("2d"),
+            ctx = canvas.getContext("2d", { willReadFrequently: true }),
             width = this.image.width,
             height = this.image.height;
 
@@ -93,7 +93,7 @@ export default class Sprite {
 
     createSilhouette() {
         const canvas = document.createElement("canvas"),
-            ctx = canvas.getContext("2d"),
+            ctx = canvas.getContext("2d", { willReadFrequently: true }),
             width = this.image.width,
             height = this.image.height;
 

@@ -16,14 +16,14 @@ export default class Renderer {
     constructor(game, canvas, background, foreground) {
         this.game = game;
         this.context =
-            canvas && canvas.getContext ? canvas.getContext("2d") : null;
+            canvas && canvas.getContext ? canvas.getContext("2d", { willReadFrequently: true }) : null;
         this.background =
             background && background.getContext
-                ? background.getContext("2d")
+                ? background.getContext("2d", { willReadFrequently: true })
                 : null;
         this.foreground =
             foreground && foreground.getContext
-                ? foreground.getContext("2d")
+                ? foreground.getContext("2d", { willReadFrequently: true })
                 : null;
 
         this.canvas = canvas;
@@ -70,22 +70,21 @@ export default class Renderer {
     }
 
     getScaleFactor() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        
-        // Calculate the best scale factor based on screen size
-        let scale = 2; // Default scale
-        
-        // For very large screens, increase scale
-        if (w >= 2560 && h >= 1440) {
+        var w = window.innerWidth,
+            h = window.innerHeight,
+            scale;
+
+        this.mobile = false;
+
+        if (w <= 1000) {
+            scale = 2;
+            this.mobile = true;
+        } else if (w <= 1500 || h <= 870) {
+            scale = 2;
+        } else {
             scale = 3;
         }
-        // For small screens, decrease scale
-        else if (w <= 1024 || h <= 768) {
-            scale = 1;
-        }
-        
-        this.mobile = w <= 1024;
+
         return scale;
     }
 
