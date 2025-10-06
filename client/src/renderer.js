@@ -70,22 +70,9 @@ export default class Renderer {
     }
 
     getScaleFactor() {
-        var w = window.innerWidth,
-            h = window.innerHeight,
-            scale;
-
+        // Force scale=2 for desktop for a consistent large window
         this.mobile = false;
-
-        if (w <= 1000) {
-            scale = 2;
-            this.mobile = true;
-        } else if (w <= 1500 || h <= 870) {
-            scale = 2;
-        } else {
-            scale = 3;
-        }
-
-        return scale;
+        return 2;
     }
 
     rescale() {

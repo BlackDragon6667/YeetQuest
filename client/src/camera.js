@@ -12,10 +12,12 @@ export default class Camera {
     }
 
     rescale() {
-        var factor = this.renderer.mobile ? 1 : 2;
 
-        this.gridW = 15 * factor;
-        this.gridH = 7 * factor;
+    // Make the camera render a larger area to match the new canvas size
+    // For 1280x720 at tilesize 16 and scale 2, gridW = 1280/(16*2) = 40, gridH = 720/(16*2) = 22.5
+    // We'll round to 40x22 for a good fit
+    this.gridW = 40;
+    this.gridH = 22;
 
         log.debug("---------");
         log.debug("Factor:" + factor);
