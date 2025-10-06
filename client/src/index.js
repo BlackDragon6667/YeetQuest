@@ -245,6 +245,7 @@ function initApp() {
     $("#resize-check").on(TRANSITIONEND, app.resizeUi.bind(app));
 
     log.info("App initialized.");
+    log.info("Hello! Welcome to YeetQuest!");
 
     initGame();
 }
